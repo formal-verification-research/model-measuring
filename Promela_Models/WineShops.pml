@@ -1,6 +1,10 @@
 #define N 5    // Shelf size
 #define N2  10 // History length
 
+// define number of instances of each process for the spins compiler
+#define __instances_winery 1
+#define __instances_patron 1
+
 //TODO Look at the 'dubious use of else' errors. They appear to behave as warnings.
 
 // Types Of Wine   //
