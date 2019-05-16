@@ -11,8 +11,12 @@ parser.add_argument('--ltl', metavar='<ltl>', type=str, nargs=1, help='The LTL f
 args = parser.parse_args()
 
 filename = args.filename[0]
+model_name = filename[0:-5]
 ltl = args.ltl[0]
 
+#*****************************************************#
+# Parses the LTL to extract useful atomic propositions.
+#*****************************************************#
 comparison_symbols=['==', '!=', '>=', '<=', '>', '<']
 separated_ltl = []
 atomic_propositions = []
@@ -25,39 +29,40 @@ for part in separated_ltl:
     try:
         words = part.split(' ')
         if words[1] in comparison_symbols:
-            print("entered the append loop")
             atomic_propositions.append(part)
     except:
-        print("can't slpit " + part.join(','))
+        print("Ignoring " + part.join(' '))
 
-
-# Confirms spins is installed correctly
+#***********************************************************#
+# spot takes care of the automaton conversion beginning here.
+#***********************************************************#
 spot.ltsmin.require('spins')
-
-# Only needed for displaying structures which is not working natively
 spot.setup() 
 
 # Compile the promela file
 model = spot.ltsmin.load(filename)
 
-# The argument is the atomic proposition(s) to observe in a list
-print("making kripke with atomic propositions:")
+# The argument taken here is the atomic proposition(s) to observe in a python list
+print("Making kripke with atomic propositions:")
 print(atomic_propositions)
 k = model.kripke(atomic_propositions)
-print("done making kripke")
+print("Done making kripke")
 
-k.save('kripke.hoa')
-k.save('kripke.dot','dot')
+# Save the kripke structure
+k.save(model_name + '_kripke.hoa')
+k.save(model_name + '_kripke.dot','dot')
 
-print("begin buchi conversion")
-buchi = spot.automaton('kripke.hoa').postprocess('BA', 'any')
-print("finished buchi conversion")
+print("Begining buchi conversion. This may take some time")
+buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA')
+print("Finished buchi conversion")
 
-buchi.save('buchi.hoa')
-buchi.save('buchi.dot','dot')
+buchi.save(model_name + '_buchi.hoa')
+buchi.save(model_name + 'buchi.dot','dot')
 
-ret_code = subprocess.call(['dot', '-Tpdf', 'buchi.dot', '-o', 'buchi.pdf'])
-print("buchi pdf ret_code: " + str(ret_code))
+ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_buchi.dot', '-o', model_name + '_buchi.pdf'])
+if ret_code == 0:
+    print('Human readable Buchi automaton saved at ' + model_name + '_buchi.pdf')
 
-ret_code = subprocess.call(['dot', '-Tpdf', 'kripke.dot', '-o', 'kripke.pdf'])
-print("kripke pdf ret_code: " + str(ret_code))
+ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_kripke.dot', '-o', model_name + '_kripke.pdf'])
+if ret_code == 0:
+    print('Human readable Kripke structure saved at ' + model_name + '_kripke.pdf')

@@ -1,17 +1,24 @@
-#define N 5
-#define N2  10
+#define N 5    // Shelf size
+#define N2  10 // History length
 
-//LTL Parts
+//TODO Look at the 'dubious use of else' errors. They appear to behave as warnings.
+
+// Types Of Wine   //
+// 0 = No Wine     //
+// 1 = Shop 1 Wine //
+// 2 = Show 2 Wine //
+
+//LTL Parts (needed to make ltl checking work, not needed for buchi)
 #define hasOne (wine1s >= 1)
 #define hasHalfN (wine1s >= N / 2)
 #define has2N (wine1s >= 2*N)
 
-int wine1s = 2 * N;
+int wine1s = N2;
 int i = 0; // Only use in d_step. always set to 0 at end.
 byte history[N2];
-
 byte boughtWine;
 
+// A function to aid in later readability
 inline updateHistory() {
 	d_step{
 		i = (2 * N) - 1;
@@ -42,16 +49,10 @@ inline updateHistory() {
 	}
 }
 
-// used whenever a wine is received by the patron
-
-// Types Of Wine   //
-// 0 = No Wine     //
-// 1 = Shop 1 Wine //
-// 2 = Show 2 Wine //
 
 
-chan shelf1     = [N] of {byte}
-chan shelf2     = [N] of {byte}
+chan shelf1 = [N] of {byte}
+chan shelf2 = [N] of {byte}
 
 proctype winery(chan shipTo1, shipTo2) {
 	do
@@ -78,18 +79,20 @@ proctype patron(chan buyFrom1, buyFrom2) {
 
 init {
 	// Initialize the history all in one state transition.
-	d_step {/*{{{*/
+	d_step {
 	do
 	:: i < (2 * N) -> history[i] = 1; i++
 	:: else -> break
 	od;
 	i = 0;
-	}/*}}}*/
+	}
 
+	// Start Processes
 	run winery(shelf1, shelf2);
 	run patron(shelf1, shelf2);
 }
 
+// These must be commented for buchi conversion.
 
 //# ltl alwaysOne {[] hasOne}
 //# ltl eventually {<> hasOne}
