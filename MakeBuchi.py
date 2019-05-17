@@ -21,7 +21,7 @@ parser.add_argument('-c', '--clean',
 args = parser.parse_args()
 
 filename = args.filename[0]
-model_name = filename[0:-5]
+model_name = filename[0:-4]
 if args.ltl != 'NULL':
     ltl = args.ltl
 else:
