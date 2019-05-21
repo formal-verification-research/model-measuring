@@ -5,6 +5,9 @@ import os
 import sys
 import argparse
 
+#TODO Process killed by linux kernel probably for excessive memory use
+#TODONE By using medium or small optimization in postprocess
+
 parser = argparse.ArgumentParser(description='turn a promela specification into a buchi automaton')
 parser.add_argument('filename', 
         metavar='<filename>', 
@@ -73,11 +76,11 @@ k.save(model_name + '_kripke.hoa')
 k.save(model_name + '_kripke.dot','dot')
 
 print("Begining buchi conversion. This may take some time")
-buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA')
+buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA', 'Medium', 'Small')
 print("Finished buchi conversion")
 
 buchi.save(model_name + '_buchi.hoa')
-buchi.save(model_name + 'buchi.dot','dot')
+buchi.save(model_name + '_buchi.dot','dot')
 
 ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_buchi.dot', '-o', model_name + '_buchi.pdf'])
 if ret_code == 0:

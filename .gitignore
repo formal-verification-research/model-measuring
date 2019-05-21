@@ -2,3 +2,5 @@
 *.hoa
 *.dot
 *.swp
+*.spins
+*.c

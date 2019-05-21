@@ -1,11 +1,15 @@
 #define N 5    // Shelf size
-#define N2  10 // History length
+#define N2 10 // History length
 
 // define number of instances of each process for the spins compiler
 #define __instances_winery 1
 #define __instances_patron 1
 
 //TODO Look at the 'dubious use of else' errors. They appear to behave as warnings.
+
+
+//TODO The postprocess method encounters either a segfault or an OOM kill with this model
+//TODONE The solution was to hide the attay and use 'Low' optimization for postprocess
 
 // Types Of Wine   //
 // 0 = No Wine     //
@@ -19,7 +23,7 @@
 
 int wine1s = N2;
 int i = 0; // Only use in d_step. always set to 0 at end.
-byte history[N2];
+hidden byte history[N2];
 byte boughtWine;
 
 // A function to aid in later readability
@@ -53,8 +57,6 @@ inline updateHistory() {
 	}
 }
 
-
-
 chan shelf1 = [N] of {byte}
 chan shelf2 = [N] of {byte}
 
@@ -72,10 +74,10 @@ proctype winery(chan shipTo1, shipTo2) {
 proctype patron(chan buyFrom1, buyFrom2) {
 	// Wine Buying loop
 	do
-	:: buyFrom1 ? boughtWine -> updateHistory();
+	:: buyFrom1 ? boughtWine -> updateHistory(); boughtWine = 0;
 	:: else ->
 		if
-		:: buyFrom2 ? boughtWine -> updateHistory();
+		:: buyFrom2 ? boughtWine -> updateHistory(); boughtWine = 0;
 		:: else -> skip
 		fi
 	od;
@@ -85,7 +87,7 @@ init {
 	// Initialize the history all in one state transition.
 	d_step {
 	do
-	:: i < (2 * N) -> history[i] = 1; i++
+	:: i < (N2) -> history[i] = 1; i++
 	:: else -> break
 	od;
 	i = 0;
