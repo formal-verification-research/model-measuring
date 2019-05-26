@@ -5,3 +5,4 @@
 *.spins
 *.c
 __pycache__/
+figures/
