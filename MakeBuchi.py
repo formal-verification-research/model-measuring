@@ -76,7 +76,10 @@ k.save(model_name + '_kripke.hoa')
 k.save(model_name + '_kripke.dot','dot')
 
 print("Begining buchi conversion. This may take some time")
-buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA', 'Medium', 'Small')
+buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA', 'Low', 'Small')
+dead = spot.remove_ap()
+dead.add_ap("dead")
+buchi = dead.strip(buchi)
 print("Finished buchi conversion")
 
 buchi.save(model_name + '_buchi.hoa')
