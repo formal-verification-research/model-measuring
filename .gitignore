@@ -4,3 +4,4 @@
 *.swp
 *.spins
 *.c
+__pycache__/
