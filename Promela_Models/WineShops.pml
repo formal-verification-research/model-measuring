@@ -62,35 +62,28 @@ chan shelf2 = [N] of {byte}
 
 proctype winery(chan shipTo1, shipTo2) {
 	do
-	:: shipTo1 ! 1
-	:: else ->
-		if
-		:: shipTo2 ! 2
-		:: else -> skip
-		fi
+	:: !full(shipTo1) -> shipTo1!1
+	:: full(shipTo1) && !full(shipTo2) -> shipTo2!2
 	od;
 }
 
 proctype patron(chan buyFrom1, buyFrom2) {
 	// Wine Buying loop
 	do
-	:: buyFrom1 ? boughtWine -> updateHistory(); boughtWine = 0;
-	:: else ->
-		if
-		:: buyFrom2 ? boughtWine -> updateHistory(); boughtWine = 0;
-		:: else -> skip
-		fi
+	:: buyFrom1?[boughtWine] -> buyFrom1?boughtWine; updateHistory(); boughtWine = 0;
+	:: !buyFrom1?[boughtWine] && buyFrom2?[boughtWine] -> buyFrom2?boughtWine -> updateHistory(); boughtWine = 0;
+	:: else -> skip
 	od;
 }
 
 init {
 	// Initialize the history all in one state transition.
 	d_step {
-	do
-	:: i < (N2) -> history[i] = 1; i++
-	:: else -> break
-	od;
-	i = 0;
+		do
+		:: i < (N2) -> history[i] = 1; i++
+		:: else -> break
+		od;
+		i = 0;
 	}
 
 	// Start Processes
