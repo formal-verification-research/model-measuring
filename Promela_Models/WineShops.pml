@@ -1,11 +1,9 @@
-#define N 5    // Shelf size
-#define N2 10 // History length
+#define N 3  // Shelf size
+#define N2 6 // History length
 
 // define number of instances of each process for the spins compiler
 #define __instances_winery 1
 #define __instances_patron 1
-
-//TODO Look at the 'dubious use of else' errors. They appear to behave as warnings.
 
 
 //TODO The postprocess method encounters either a segfault or an OOM kill with this model
@@ -20,75 +18,77 @@
 #define hasOne (wine1s >= 1)
 #define hasHalfN (wine1s >= N / 2)
 #define has2N (wine1s >= 2*N)
+#define buy1 shelf1?[boughtWine]
 
 int wine1s = N2;
-int i = 0; // Only use in d_step. always set to 0 at end.
+hidden int i = 0; // Only use in d_step. always set to 0 at end.
 hidden byte history[N2];
-byte boughtWine;
+byte boughtWine = 0;
 
 // A function to aid in later readability
+// Only use in d_step
 inline updateHistory() {
-	d_step{
-		i = (2 * N) - 1;
-		wine1s = 0;
-		do
-		:: i > 0 -> 
-			history[i] = history[i - 1];
-			if
-			:: history[i] == 1 -> 
-				wine1s++
-			:: else -> 
-				skip
-			fi
-			i--;
-		:: else -> 
-			break
-		od;
-		if
-		:: boughtWine == 1 -> 
-			wine1s++; 
-			history[0] = 1
-		:: boughtWine == 2 -> 
-			history[0] = 2
-		:: else -> 
-			history[0] = 0
-		fi
-		i = 0;
-	}
+	i = N2 - 1;
+	wine1s = 0;
+	do
+	:: i > 0 -> 
+		history[i] = history[i - 1];
+		i--
+	:: else -> 
+		break
+	od;
+	history[0] = boughtWine;
+	i = N2 - 1;
+	do
+	:: (i >= 0) && (history[i] == 1) ->
+		wine1s++;
+		i--
+	:: (i >= 0) && (history[i] != 1) ->
+		i--
+	:: else ->
+		break
+	od;
+	i = 0;
 }
 
 chan shelf1 = [N] of {byte}
 chan shelf2 = [N] of {byte}
 
-proctype winery(chan shipTo1, shipTo2) {
+active proctype winery() {
 	do
-	:: !full(shipTo1) -> shipTo1!1
-	:: full(shipTo1) && !full(shipTo2) -> shipTo2!2
+	:: !full(shelf1) -> shelf1!1
+	:: full(shelf1) && !full(shelf2) -> shelf2!2
 	od;
 }
 
-proctype patron(chan buyFrom1, buyFrom2) {
+active proctype patron() {
 	// Wine Buying loop
 	do
-	:: buyFrom1?[boughtWine] -> buyFrom1?boughtWine; updateHistory(); boughtWine = 0;
-	:: !buyFrom1?[boughtWine] && buyFrom2?[boughtWine] -> buyFrom2?boughtWine -> updateHistory(); boughtWine = 0;
+	:: shelf1?[boughtWine] -> 
+		shelf1?boughtWine;
+		atomic {
+			updateHistory();
+			boughtWine = 0;
+		}
+	:: !shelf1?[boughtWine] && shelf2?[boughtWine] -> 
+		shelf2?boughtWine;
+		atomic {
+			updateHistory();
+			boughtWine = 0;
+		}
 	:: else -> skip
 	od;
 }
 
 init {
 	// Initialize the history all in one state transition.
-	d_step {
+	atomic {
 		do
 		:: i < (N2) -> history[i] = 1; i++
 		:: else -> break
 		od;
 		i = 0;
 	}
-
-	// Start Processes
-	run winery(shelf1, shelf2);
-	run patron(shelf1, shelf2);
 }
 
 // These must be commented for buchi conversion.
