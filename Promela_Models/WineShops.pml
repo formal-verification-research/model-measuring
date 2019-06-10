@@ -18,37 +18,37 @@
 #define hasOne (wine1s >= 1)
 #define hasHalfN (wine1s >= N / 2)
 #define has2N (wine1s >= 2*N)
-#define buy1 shelf1?[boughtWine]
 
 int wine1s = N2;
-hidden int i = 0; // Only use in d_step. always set to 0 at end.
-hidden byte history[N2];
+hidden int i = 0;
+byte history[N2];
 byte boughtWine = 0;
 
 // A function to aid in later readability
-// Only use in d_step
 inline updateHistory() {
-	i = N2 - 1;
-	wine1s = 0;
-	do
-	:: i > 0 -> 
-		history[i] = history[i - 1];
-		i--
-	:: else -> 
-		break
-	od;
-	history[0] = boughtWine;
-	i = N2 - 1;
-	do
-	:: (i >= 0) && (history[i] == 1) ->
-		wine1s++;
-		i--
-	:: (i >= 0) && (history[i] != 1) ->
-		i--
-	:: else ->
-		break
-	od;
-	i = 0;
+	d_step {
+		i = N2 - 1;
+		wine1s = 0;
+		do
+		:: i > 0 -> 
+			history[i] = history[i - 1];
+			i--
+		:: else -> 
+			break
+		od;
+		history[0] = boughtWine;
+		i = N2 - 1;
+		do
+		:: (i >= 0) && (history[i] == 1) ->
+			wine1s++;
+			i--
+		:: (i >= 0) && (history[i] != 1) ->
+			i--
+		:: else ->
+			break
+		od;
+		i = 0;
+	}
 }
 
 chan shelf1 = [N] of {byte}
@@ -64,32 +64,21 @@ active proctype winery() {
 active proctype patron() {
 	// Wine Buying loop
 	do
-	:: shelf1?[boughtWine] -> 
+	:: !empty(shelf1) -> 
 		shelf1?boughtWine;
 		atomic {
 			updateHistory();
 			boughtWine = 0;
 		}
-	:: !shelf1?[boughtWine] && shelf2?[boughtWine] -> 
+	:: empty(shelf1) && !empty(shelf2) -> 
 		shelf2?boughtWine;
 		atomic {
 			updateHistory();
 			boughtWine = 0;
 		}
-	:: else -> skip
 	od;
 }
 
-init {
-	// Initialize the history all in one state transition.
-	atomic {
-		do
-		:: i < (N2) -> history[i] = 1; i++
-		:: else -> break
-		od;
-		i = 0;
-	}
-}
 
 // These must be commented for buchi conversion.
 
