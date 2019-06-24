@@ -16,17 +16,17 @@
 
 //LTL Parts (needed to make ltl checking work, not needed for buchi)
 #define hasOne (wine1s >= 1)
-#define hasHalfN (wine1s >= N / 2)
-#define has2N (wine1s >= 2*N)
+#define hasN (wine1s >= N)
+#define has2N (wine1s >= N2)
 
 int wine1s = N2;
 hidden int i = 0;
-byte history[N2];
+hidden byte history[N2] = 1;
 byte boughtWine = 0;
 
 // A function to aid in later readability
 inline updateHistory() {
-	d_step {
+	atomic {
 		i = N2 - 1;
 		wine1s = 0;
 		do
@@ -54,35 +54,43 @@ inline updateHistory() {
 chan shelf1 = [N] of {byte}
 chan shelf2 = [N] of {byte}
 
-active proctype winery() {
+active proctype winery() { //pure nondeterministic choice
 	do
-	:: !full(shelf1) -> shelf1!1
-	:: full(shelf1) && !full(shelf2) -> shelf2!2
+	:: shelf1!1 ->
+		// use the pc pointing to this next instruction
+		// to label the previous action
+		// this instruction must always be executable (such as an assignment)
+		_ = 0
+	:: shelf2!2 ->
+		_ = 0
 	od;
 }
 
 active proctype patron() {
 	// Wine Buying loop
 	do
-	:: !empty(shelf1) -> 
+	:: if
+	   :: !(shelf1?[boughtWine]) && (shelf2?[boughtWine]) -> 
+	   	shelf2?boughtWine;
+		updateHistory()
+	   :: shelf1?[boughtWine] ->
 		shelf1?boughtWine;
-		atomic {
-			updateHistory();
-			boughtWine = 0;
-		}
-	:: empty(shelf1) && !empty(shelf2) -> 
-		shelf2?boughtWine;
-		atomic {
-			updateHistory();
-			boughtWine = 0;
-		}
+		updateHistory()
+	   fi
+//	:: shelf1?[boughtWine] ->
+//		shelf1?boughtWine;
+//		// the pc of atomic (in the inline) serves as label to shelf1?boughtWine
+//		updateHistory()
+//	:: shelf2?[boughtWine] -> 
+//		shelf2?boughtWine;
+//		updateHistory()
+//	:: else -> skip
 	od;
 }
 
 
 // These must be commented for buchi conversion.
 
-//# ltl alwaysOne {[] hasOne}
-//# ltl eventually {<> hasOne}
-//# ltl alwaysHalfN {[] hasHalfN}
-//# ltl always2N {[] has2N}
+// ltl alwaysOne {[] hasOne}
+// ltl alwaysN {[] hasN}
+// ltl always2N {[] has2N}
