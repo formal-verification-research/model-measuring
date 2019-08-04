@@ -28,6 +28,10 @@ args = parser.parse_args()
 
 idDict = {}
 
+
+#TODO: fill this entry with another set of command line options
+#idDict['idle']
+
 for i in range (1, len(args.behavior) + 1):
     split_behavior = args.behavior[i-1].split(',')
     idDict[split_behavior[0]] = dict({'state_num' : i, 
@@ -47,8 +51,21 @@ hAut.prop_state_acc(True)
 # form of an edge hAut.new_wt_edge(<from>, <to>, <ap>, weight=<weight>)
 # still need to consider edges back to initial state. maybe a -r with a list of states that go back to initial state?
 
+ap_transitions = {}
 
+for behavior in idDict:
+    reach_list = behavior['reach_from'].split(':')
+    current_ap = buddy.bdd_ithvar(hAut.register_ap(behavior['ap']))
+    ap_transitions[behavior['state_num']] = current_ap
+    for an_id in reach_list:
+        # the form of ap in a weigthed edge may require some additional trickery
+        #TODO: remove this if-else once idle state is defined.
+        if an_id == 'idle'
+            hAut.new_wt_edge(0, behavior['state_num'], current_ap, weight=int(behavior['weight']))
+        else:
+            hAut.new_wt_edge(idDict[an_id]['state_num'], behavior['state_num'], current_ap, weight=int(behavior['weight']))
 
+print(dir(hAut))
 
 
 
