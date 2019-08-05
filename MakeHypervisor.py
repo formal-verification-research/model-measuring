@@ -73,7 +73,12 @@ for behavior in list(idDict.values()):
         for an_id in reach_list:
             #NOTE: the form of ap in a weigthed edge may require some additional trickery here
             hAut.new_wt_edge(idDict[an_id]['state_num'], behavior['state_num'], current_ap, weight=int(behavior['weight']))
+            ### Create the self loops ###
+            #TODO: Find out about the vitality of these for deterministic behavior.
+            
 
+
+### Save the created automaton ###
 print(hAut.to_str())
 
 with open('test.dot', 'w') as fp:
