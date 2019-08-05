@@ -1,6 +1,7 @@
 import argparse
 import spot
 import buddy
+import subprocess
 from Hypervisor import *
 
 parser = argparse.ArgumentParser(description='assisted construction of a hypervisor for a given automaton')
@@ -22,53 +23,64 @@ parser = argparse.ArgumentParser(description='assisted construction of a hypervi
 # id 0 is reserved fo the idle state.
 parser.add_argument('-b', '--behavior',
         action='append',
-        help='Add an erroneous behavior to the hypervisor. See documentation for details.')
+        help='Add an erroneous behavior to the hypervisor. Format <id,type,reachability,ap,weight>')
+
+parser.add_argument('-r', '--reset',
+        action='append',
+        default=[],
+        help='Add a behavior of the same format that returns the model to the idle state.')
 
 args = parser.parse_args()
 
 idDict = {}
+resetDict = {}
 
-
-#TODO: fill this entry with another set of command line options
-#idDict['idle']
-
-for i in range (1, len(args.behavior) + 1):
+for i in range(1, len(args.behavior) + 1):
     split_behavior = args.behavior[i-1].split(',')
-    idDict[split_behavior[0]] = dict({'state_num' : i, 
+    idDict[split_behavior[0]] = dict({'state_num' : i,
+        'type' : split_behavior[1],
+        'reach_from' : split_behavior[2],
+        'ap' : split_behavior[3],
+        'weight' : split_behavior[4]})
+
+idDict['idle'] = dict({'state_num' : 0})
+
+for behavior in args.reset:
+    split_reset = behavior.split(',')
+    resetDict[split_reset[0]] =  dict({'state_num' : 0, 
         'type' : split_behavior[1], 
         'reach_from' : split_behavior[2], 
         'ap' : split_behavior[3], 
         'weight' : split_behavior[4]})
 
+
 # important stuff for making a wtAutomaton (will need to work with model)
 hAut = wtAutomaton(spot.make_bdd_dict())
 
-hAut.new_states(len(idDict) + 1)
+hAut.new_states(len(idDict))
 hAut.prop_state_acc(True)
-
-# Loop though the dictionary and create the behaviors
-# this will require parsing of reachability list and creation of aps as done in ModelMeasureMain.py
-# form of an edge hAut.new_wt_edge(<from>, <to>, <ap>, weight=<weight>)
-# still need to consider edges back to initial state. maybe a -r with a list of states that go back to initial state?
 
 ap_transitions = {}
 
-for behavior in idDict:
-    reach_list = behavior['reach_from'].split(':')
-    current_ap = buddy.bdd_ithvar(hAut.register_ap(behavior['ap']))
-    ap_transitions[behavior['state_num']] = current_ap
-    for an_id in reach_list:
-        # the form of ap in a weigthed edge may require some additional trickery
-        #TODO: remove this if-else once idle state is defined.
-        if an_id == 'idle'
-            hAut.new_wt_edge(0, behavior['state_num'], current_ap, weight=int(behavior['weight']))
-        else:
+### Do for all error behaviors ###
+for behavior in list(idDict.values()):
+    if behavior['state_num'] != 0:
+        reach_list = behavior['reach_from'].split(':')
+        current_ap = buddy.bdd_ithvar(hAut.register_ap(behavior['ap']))
+        ap_transitions[behavior['state_num']] = current_ap
+    
+        ### Create transitions to this error state ###
+        for an_id in reach_list:
+            #NOTE: the form of ap in a weigthed edge may require some additional trickery here
             hAut.new_wt_edge(idDict[an_id]['state_num'], behavior['state_num'], current_ap, weight=int(behavior['weight']))
 
-print(dir(hAut))
+print(hAut.to_str())
 
+with open('test.dot', 'w') as fp:
+    fp.write(hAut.to_str('dot'))
+fp.close()
 
-
+subprocess.call(['dot', '-Tpdf', 'test.dot', '-o', 'test.pdf'])
 
 
 
