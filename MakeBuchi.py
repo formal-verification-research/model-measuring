@@ -5,6 +5,13 @@ import os
 import sys
 import argparse
 
+#************************************************#
+#  Description MakeBuchi:
+#    MakeBuchi is for converting the promela
+#    model into both a kripke structure and a 
+#    buchi automaton.
+#************************************************#
+
 #TODO Process killed by linux kernel probably for excessive memory use
 #TODONE By using medium or small optimization in postprocess
 
