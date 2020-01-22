@@ -11,13 +11,30 @@ import re
 
 import numpy as np
 
+
+#*******************************************************************#
+#  Class wtAutomaton: inherits from spot.twa_graph
+#*******************************************************************#
 class wtAutomaton(spot.twa_graph):
 
+#*******************************************************************#
+#  Function init: Constructor
+#    bdict    	- buchi dictionary comes from spot.twa_Graph
+#    wtRelation - empty list, the index is the edge number, the value
+#                 is the weight assigned to that edge.
+#*******************************************************************#
     def __init__(self, bdict):
         super(wtAutomaton, self).__init__(bdict)
 
         self._wtRelation = {}
-
+#*******************************************************************#
+#  Function new_wt_edge:
+#    args 	- passes in all of the edges, creates them
+#           	  and the number of the edge that was created
+#                 is stored in edge_num.
+#    kargs 	- This is the weight of the edge that is to be
+#		  created, if no weight is specified, it is set to 0
+#*******************************************************************#
     def new_wt_edge(self, *args, **kargs):
 
         edge_num = self.new_edge(*args)
