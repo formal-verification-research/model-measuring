@@ -12,13 +12,13 @@ import re
 import numpy as np
 
 
-#*******************************************************************#
+#*********************************************************************************#
 #  Class wtAutomaton: inherits from spot.twa_graph
-#*******************************************************************#
+#*********************************************************************************#
 class wtAutomaton(spot.twa_graph):
 
 #*******************************************************************#
-#  Function init: Constructor
+#  FUNCTION init: Constructor
 #    bdict    	- buchi dictionary comes from spot.twa_Graph
 #    wtRelation - empty list, the index is the edge number, the value
 #                 is the weight assigned to that edge.
@@ -27,8 +27,9 @@ class wtAutomaton(spot.twa_graph):
         super(wtAutomaton, self).__init__(bdict)
 
         self._wtRelation = {}
+
 #*******************************************************************#
-#  Function new_wt_edge:
+#  FUNCTION new_wt_edge:
 #    args 	- passes in all of the edges, creates them
 #           	  and the number of the edge that was created
 #                 is stored in edge_num.
@@ -49,10 +50,23 @@ class wtAutomaton(spot.twa_graph):
 
         return edge_num
 
+#*******************************************************************#
+#  FUNCTION getEdgeWeight:
+#    Thus function returns the weight of the specified edge from the
+#    list self._wtRelation.
+#
+#    edge_num   - the edge we want to look at.
+#*******************************************************************#
     def getEdgeWeight(self, edge_num):
         return self._wtRelation[edge_num]
 
 
+#*******************************************************************#
+#  FUNCTION dot_str
+#   search_re - regular expression object, that contains the compiled
+#               regular expression  -> label=<(anything)>, and it
+#               then looks for the regular expression.
+#*******************************************************************#
     def dot_str(self):
 
         dot_str = self.to_str('dot')

@@ -6,7 +6,7 @@ import operator
 import pprint
 import spot
 import buddy
-from Hypervisor import *
+from HypervisorPromela import *
 
 
 def product3(left, right):
