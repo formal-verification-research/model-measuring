@@ -62,10 +62,11 @@ class wtAutomaton(spot.twa_graph):
 
 
 #*******************************************************************#
-#  FUNCTION dot_str
-#   search_re - regular expression object, that contains the compiled
-#               regular expression  -> label=<(anything)>, and it
-#               then looks for the regular expression.
+#  FUNCTION dot_str:
+#   search_re - regular expression object, looks for things that 
+#               look like  " -> label=<anything> ", anything meaning
+#               any characters within the < >. It then uses the regex
+#               to search.
 #*******************************************************************#
     def dot_str(self):
 
@@ -79,7 +80,14 @@ class wtAutomaton(spot.twa_graph):
                 dot_str = search_re.sub(r'\1, {0}'.format(self._wtRelation[self.edge_number(e)]), dot_str)
 
         return dot_str
+  
 
+#*******************************************************************#
+#  FUNCTION optimal_value:
+#    This determines which function will be used based on the
+#    cost_function parameter passed in. It will use either:
+#    sum_function() or limit_avg_function()
+#*******************************************************************#
     def optimal_value(self, cost_function):
 
         if cost_function=='FUN_SUM':
@@ -89,6 +97,13 @@ class wtAutomaton(spot.twa_graph):
         else:
             return None
 
+#*******************************************************************#
+#  FUNCTION findShortestPathXY:
+#    This creates a numpy array with size (number of states in the
+#    model+1) (numbyer of states) and it fills it with float values 
+#    of "positive infinity". It sets the first spot to 0. It then 
+#    loops for all of the vertices and 
+#*******************************************************************#
     def findShortestPathXY(self):
         num_vertex = self.num_states()
         
@@ -113,6 +128,11 @@ class wtAutomaton(spot.twa_graph):
 
 
 
+#*******************************************************************#
+#  FUNCTION minimum_mean_cycle:
+#    This uses karps algorithm to evaluate the results produced by 
+#    the model measuring.
+#*******************************************************************#
     # # karps algorithm
     def minimum_mean_cycle(self):
         
@@ -143,6 +163,10 @@ class wtAutomaton(spot.twa_graph):
         return avg
 
 
+#*******************************************************************#
+#  FUNCTION limit_avg_function
+#    calculates the limit average of the model measuring result.
+#*******************************************************************#
     def limit_avg_function(self):
         scc_i = spot.scc_info(self)
         scc_num = scc_i.scc_count()
@@ -188,6 +212,10 @@ class wtAutomaton(spot.twa_graph):
 
 
 
+#*******************************************************************#
+#  FUNCTION sum_function
+#    calculates the sum of the model measuring result.
+#*******************************************************************#
     def sum_function(self):
 
         scc_i = spot.scc_info(self)
@@ -337,6 +365,14 @@ class Hypervisor(wtAutomaton):
 
 
 
+#*******************************************************************#
+#  FUNCTION main (if main)
+#    Sets up spot
+#    defines the subfunction make_ts
+#    SUBFUNCTION make_ts: creates a model that is an object of type
+#    wtAutomaton, so that we can use it to perform  
+#      
+#*******************************************************************#
 if __name__ == '__main__':
 
     spot.setup()
