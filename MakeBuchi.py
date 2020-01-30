@@ -99,3 +99,14 @@ if ret_code == 0:
 ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_kripke.dot', '-o', model_name + '_kripke.pdf'])
 if ret_code == 0:
     print('Human readable Kripke structure saved at ' + model_name + '_kripke.pdf')
+
+
+    #TODO:
+    #make the hypervisor Buchi
+    #Look into the spot product function
+        #how did thakur do it?
+        #How does it work?
+        #How can we use it?
+    #Look into compositions - how does that work? composing models
+        #could we compose the hypervisor with the model
+        #then make it a weighted automaton?
