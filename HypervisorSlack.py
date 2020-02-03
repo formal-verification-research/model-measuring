@@ -20,15 +20,15 @@ transitionLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("transition"))
 
 buchiHypervisor.set_generalized_buchi(2)
 
-buchiHypervisor.new_states(3)
+buchiHypervisor.new_states(2)
 
 buchiHypervisor.set_init_state(0)
 
-buchiHypervisor.new_edge(0,0, true)
+buchiHypervisor.new_edge(0,0, t)
 buchiHypervisor.new_edge(0,1, transitionLabel)
 buchiHypervisor.new_edge(1,1, label)
 buchiHypervisor.new_edge(1,1, notLabel)
-buchiHypervisor.new_edge(1,0, label)
+buchiHypervisor.new_edge(1,0, t)
 
 
 
