@@ -5,13 +5,6 @@ import os
 import sys
 import argparse
 
-#************************************************#
-#  Description MakeBuchi:
-#    MakeBuchi is for converting the promela
-#    model into both a kripke structure and a 
-#    buchi automaton.
-#************************************************#
-
 #TODO Process killed by linux kernel probably for excessive memory use
 #TODONE By using medium or small optimization in postprocess
 
@@ -99,14 +92,3 @@ if ret_code == 0:
 ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_kripke.dot', '-o', model_name + '_kripke.pdf'])
 if ret_code == 0:
     print('Human readable Kripke structure saved at ' + model_name + '_kripke.pdf')
-
-
-    #TODO:
-    #make the hypervisor Buchi
-    #Look into the spot product function
-        #how did thakur do it?
-        #How does it work?
-        #How can we use it?
-    #Look into compositions - how does that work? composing models
-        #could we compose the hypervisor with the model
-        #then make it a weighted automaton?
