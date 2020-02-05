@@ -50,6 +50,7 @@ if args.clean:
         sys.exit(1)
     sys.exit(0)
 
+print("--------Generating Buchi Automaton with specified ltl--------")
 #*****************************************************#
 # Parses the LTL to extract useful atomic propositions.
 #*****************************************************#
@@ -68,6 +69,7 @@ for part in separated_ltl:
             atomic_propositions.append(part)
     except:
         print("Ignoring " + part.join(' '))
+
 
 #***********************************************************#
 # spot takes care of the automaton conversion beginning here.
@@ -116,9 +118,12 @@ if ret_code == 0:
     #Look into compositions - how does that work? composing models
         #could we compose the hypervisor with the model
         #then make it a weighted automaton?
+
 # A reference for creating automaton via spot can be found at:
 # https://spot.lrde.epita.fr/tut22.html
 
+print("")
+print("--------Generating Hypervisor with specified ltl--------")
 
 # creates the dictionary which maintains the correspondance between the
 # atomic propositions and the Boolean decision diagram (bdd) variables that 
@@ -128,9 +133,13 @@ bdict = spot.make_bdd_dict();
 #makes an empty automaton 
 buchiHypervisor = spot.make_twa_graph(bdict); 
 
+str_atomic_propositions = " ".join([str(elem) for elem in atomic_propositions])
+print(str_atomic_propositions)
+print("")
+
 true = buddy.bdd_ithvar(buchiHypervisor.register_ap("true"))
-label = buddy.bdd_ithvar(buchiHypervisor.register_ap("ltl"))
-notLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("!ltl"))
+label = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
+notLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
 transitionLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("transition"))
 
 buchiHypervisor.set_generalized_buchi(2)
@@ -139,11 +148,11 @@ buchiHypervisor.new_states(2)
 
 buchiHypervisor.set_init_state(0)
 
-buchiHypervisor.new_edge(0,0, t)
+buchiHypervisor.new_edge(0,0, true)
 buchiHypervisor.new_edge(0,1, transitionLabel)
 buchiHypervisor.new_edge(1,1, label)
 buchiHypervisor.new_edge(1,1, notLabel)
-buchiHypervisor.new_edge(1,0, t)
+buchiHypervisor.new_edge(1,0, true)
 
 
 
