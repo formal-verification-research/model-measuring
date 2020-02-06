@@ -131,7 +131,7 @@ print("--------Generating Hypervisor with specified ltl--------")
 bdict = spot.make_bdd_dict();
 
 #makes an empty automaton 
-buchiHypervisor = spot.make_twa_graph(bdict); 
+buchiHypervisor = spot.make_twa_graph(buchi.get_dict()); 
 
 str_atomic_propositions = " ".join([str(elem) for elem in atomic_propositions])
 print(str_atomic_propositions)
@@ -149,12 +149,9 @@ buchiHypervisor.new_states(2)
 buchiHypervisor.set_init_state(0)
 
 buchiHypervisor.new_edge(0,0, true)
-buchiHypervisor.new_edge(0,1, transitionLabel)
+buchiHypervisor.new_edge(0,1, label)
 buchiHypervisor.new_edge(1,1, label)
-buchiHypervisor.new_edge(1,1, notLabel)
 buchiHypervisor.new_edge(1,0, true)
-
-
 
 print(buchiHypervisor.to_str('hoa'))
 
@@ -166,7 +163,14 @@ if ret_code == 0:
     print('Human readable Buchi automaton saved at buchiHypervisor.pdf')
 
 
+product = spot.product(buchiHypervisor, buchi)
 
+product.save('product.hoa')
+product.save('product.dot','dot')
+
+ret_code = subprocess.call(['dot', '-Tpdf', 'product.dot', '-o', 'product.pdf'])
+if ret_code == 0:
+    print('Human readable Buchi automaton saved at product.pdf')
 
 #Can we just use a single transition to change from the idle state to the faulty state?
 #Can't we have several places that could transition into an area where we would want to be faulty?
