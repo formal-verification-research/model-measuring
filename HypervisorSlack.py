@@ -137,10 +137,10 @@ str_atomic_propositions = " ".join([str(elem) for elem in atomic_propositions])
 print(str_atomic_propositions)
 print("")
 
-true = buddy.bdd_ithvar(buchiHypervisor.register_ap("true"))
+#true = buddy.bdd_ithvar(buchiHypervisor.register_ap("true"))
 label = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
-notLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
-transitionLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("transition"))
+#notLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
+#transitionLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("transition"))
 
 buchiHypervisor.set_generalized_buchi(2)
 
@@ -148,10 +148,10 @@ buchiHypervisor.new_states(2)
 
 buchiHypervisor.set_init_state(0)
 
-buchiHypervisor.new_edge(0,0, true)
+buchiHypervisor.new_edge(0,0, buddy.bddtrue)
 buchiHypervisor.new_edge(0,1, label)
 buchiHypervisor.new_edge(1,1, label)
-buchiHypervisor.new_edge(1,0, true)
+buchiHypervisor.new_edge(1,0, buddy.bddtrue)
 
 print(buchiHypervisor.to_str('hoa'))
 
