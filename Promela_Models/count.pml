@@ -3,9 +3,12 @@ byte count;
 active proctype counter()
 {
 	do
-	:: count++
-	:: count--
-	:: (count == 0) ->
+	:: count != 0 ->
+		if
+		:: count++
+		:: count--
+		fi
+	::else ->
 		break
 	od
 }
