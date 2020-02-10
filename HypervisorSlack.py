@@ -45,7 +45,7 @@ else:
 
 if args.clean:
     no_path_filename = filename.split('/')[-1]
-    ret_code = subprocess.call(['rm', model_name + '_kripke.hoa', model_name + '_kripke.dot', model_name + '_kripke.pdf', model_name + '_buchi.hoa', model_name + '_buchi.dot', model_name + '_buchi.pdf', no_path_filename + '.spins', no_path_filename + '.spins.c'])
+    ret_code = subprocess.call(['rm', model_name + '_kripke.hoa', model_name + '_kripke.dot', model_name + '_kripke.pdf', model_name + '_buchi.hoa', model_name + '_buchi.dot', model_name + '_buchi.pdf', no_path_filename + '.spins', no_path_filename + '.spins.c', model_name + '_Hypervisor.dot', model_name + '_Hypervisor.pdf', model_name + '_Hypervisor.hoa', model_name + '_Product.*'])
     if ret_code != 0:
         sys.exit(1)
     sys.exit(0)
@@ -108,6 +108,9 @@ ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_kripke.dot', '-o', mo
 if ret_code == 0:
     print('Human readable Kripke structure saved at ' + model_name + '_kripke.pdf')
 
+#***********************************************************************************************************
+#  End of MakeBuchi, this is where the hypervisor generation begins. 
+#***********************************************************************************************************
 
     #TODO:
     #make the hypervisor Buchi
@@ -118,6 +121,8 @@ if ret_code == 0:
     #Look into compositions - how does that work? composing models
         #could we compose the hypervisor with the model
         #then make it a weighted automaton?
+
+
 
 # A reference for creating automaton via spot can be found at:
 # https://spot.lrde.epita.fr/tut22.html
@@ -155,22 +160,22 @@ buchiHypervisor.new_edge(1,0, buddy.bddtrue)
 
 print(buchiHypervisor.to_str('hoa'))
 
-buchiHypervisor.save('buchiHypervisor.hoa')
-buchiHypervisor.save('buchiHypervisor.dot','dot')
+buchiHypervisor.save(model_name + '_Hypervisor.hoa')
+buchiHypervisor.save(model_name + '_Hypervisor.dot','dot')
 
-ret_code = subprocess.call(['dot', '-Tpdf', 'buchiHypervisor.dot', '-o', 'buchiHypervisor.pdf'])
+ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Hypervisor.dot', '-o', model_name + '_Hypervisor.pdf'])
 if ret_code == 0:
-    print('Human readable Buchi automaton saved at buchiHypervisor.pdf')
-
+    print('Human readable Buchi automaton saved at ' + model_name + '_Hypervisor.pdf')
+ 
 
 product = spot.product(buchiHypervisor, buchi)
 
-product.save('product.hoa')
-product.save('product.dot','dot')
+product.save(model_name + '_Product.hoa')
+product.save(model_name + '_Product.dot','dot')
 
-ret_code = subprocess.call(['dot', '-Tpdf', 'product.dot', '-o', 'product.pdf'])
+ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Product.dot', '-o', model_name + '_Product.pdf'])
 if ret_code == 0:
-    print('Human readable Buchi automaton saved at product.pdf')
+    print('Human readable Buchi automaton saved at ' + model_name + '_Product.pdf')
 
 #Can we just use a single transition to change from the idle state to the faulty state?
 #Can't we have several places that could transition into an area where we would want to be faulty?
