@@ -45,7 +45,7 @@ else:
 
 if args.clean:
     no_path_filename = filename.split('/')[-1]
-    ret_code = subprocess.call(['rm', model_name + '_kripke.hoa', model_name + '_kripke.dot', model_name + '_kripke.pdf', model_name + '_buchi.hoa', model_name + '_buchi.dot', model_name + '_buchi.pdf', no_path_filename + '.spins', no_path_filename + '.spins.c', model_name + '_Hypervisor.dot', model_name + '_Hypervisor.pdf', model_name + '_Hypervisor.hoa', model_name + '_Product.*'])
+    ret_code = subprocess.call(['rm', model_name + '_kripke.hoa', model_name + '_kripke.dot', model_name + '_kripke.pdf', model_name + '_buchi.hoa', model_name + '_buchi.dot', model_name + '_buchi.pdf', no_path_filename + '.spins', no_path_filename + '.spins.c', model_name + '_Hypervisor.dot', model_name + '_Hypervisor.pdf', model_name + '_Hypervisor.hoa', model_name + '_Product.dot', model_name + '_Product.hoa', model_name + '_Product.pdf'])
     if ret_code != 0:
         sys.exit(1)
     sys.exit(0)
