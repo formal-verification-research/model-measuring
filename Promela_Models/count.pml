@@ -1,14 +1,14 @@
-byte count;
+byte count = 3;
 
 active proctype counter()
 {
 	do
-	:: count != 0 ->
-		if
-		:: count++
-		:: count--
-		fi
-	::else ->
-		break
-	od
+	:: if
+	   :: (count == 1) -> 
+	   	count = 3;
+	   :: else ->
+		count = count -1;
+	   fi
+	od;
 }
+
