@@ -110,27 +110,14 @@ if ret_code == 0:
 
 #***********************************************************************************************************
 #  End of MakeBuchi, this is where the hypervisor generation begins. 
+#   A reference for creating automaton via spot can be found at:
+#   https://spot.lrde.epita.fr/tut22.html
 #***********************************************************************************************************
-
-    #TODO:
-    #make the hypervisor Buchi
-    #Look into the spot product function
-        #how did thakur do it?
-        #How does it work?
-        #How can we use it?
-    #Look into compositions - how does that work? composing models
-        #could we compose the hypervisor with the model
-        #then make it a weighted automaton?
-
-
-
-# A reference for creating automaton via spot can be found at:
-# https://spot.lrde.epita.fr/tut22.html
 
 print("")
 print("--------Generating Hypervisor with specified ltl--------")
 
-# creates the dictionary which maintains the correspondance between the
+# Creates the dictionary which maintains the correspondance between the
 # atomic propositions and the Boolean decision diagram (bdd) variables that 
 # label the edges of the automaton.
 bdict = spot.make_bdd_dict();
@@ -138,36 +125,55 @@ bdict = spot.make_bdd_dict();
 #makes an empty automaton 
 buchiHypervisor = spot.make_twa_graph(buchi.get_dict()); 
 
+#turns the atomic propositions into strings, so they can be used as a label
 str_atomic_propositions = " ".join([str(elem) for elem in atomic_propositions])
 print(str_atomic_propositions)
 print("")
 
-#true = buddy.bdd_ithvar(buchiHypervisor.register_ap("true"))
+#Makes the label based on the atomic propositions
 label = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
-#notLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap(str_atomic_propositions))
-#transitionLabel = buddy.bdd_ithvar(buchiHypervisor.register_ap("transition"))
 
+#*********************************************************#
+#This is where the automaton creation begins
+#*********************************************************#
+#This sets the acceptance condition to  Inf(0)&Inf(1)
 buchiHypervisor.set_generalized_buchi(2)
 
+#Here we decide how many states the automaton will have
 buchiHypervisor.new_states(2)
 
+#This is where we set the initial state, by default it's 0,
+#but it's still good to set it any ways.
 buchiHypervisor.set_init_state(0)
 
+#Here is where we define all of the edges of the automaton
+#The first parameter is the initial state, the second is the
+#next state, the third is the label that should be placed
+#there. 
+#The buddy.bddtrue label is how to place a true value.
+#The label is the label we created earlier based on the 
+#atomic propositions
 buchiHypervisor.new_edge(0,0, buddy.bddtrue)
 buchiHypervisor.new_edge(0,1, label)
 buchiHypervisor.new_edge(1,1, label)
 buchiHypervisor.new_edge(1,0, buddy.bddtrue)
 
+#Congratulations! The Hypervisor is now created!
+#This prints the .hoa file
 print(buchiHypervisor.to_str('hoa'))
 
+#Saving the hypervisor to a .hoa and .dot files
 buchiHypervisor.save(model_name + '_Hypervisor.hoa')
 buchiHypervisor.save(model_name + '_Hypervisor.dot','dot')
 
+#this is to print out the hypervisor to a pdf so that it is easily read.
 ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Hypervisor.dot', '-o', model_name + '_Hypervisor.pdf'])
 if ret_code == 0:
     print('Human readable Buchi automaton saved at ' + model_name + '_Hypervisor.pdf')
  
-
+#*****************************************************************************************************#
+# This is where the product of the Hypervisor and the Model begins.
+#*****************************************************************************************************#
 product = spot.product(buchiHypervisor, buchi)
 
 product.save(model_name + '_Product.hoa')
