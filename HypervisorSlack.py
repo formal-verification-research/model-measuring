@@ -80,10 +80,12 @@ spot.setup()
 # Compile the promela file
 model = spot.ltsmin.load(filename)
 
+
 # The argument taken here is the atomic proposition(s) to observe in a python list
 print("Making kripke with atomic propositions:")
 print(atomic_propositions)
 k = model.kripke(atomic_propositions)
+
 print("Done making kripke")
 
 # Save the kripke structure
@@ -146,6 +148,7 @@ buchiHypervisor.new_states(2)
 #but it's still good to set it any ways.
 buchiHypervisor.set_init_state(0)
 
+#************************************************************#
 #Here is where we define all of the edges of the automaton
 #The first parameter is the initial state, the second is the
 #next state, the third is the label that should be placed
@@ -153,13 +156,14 @@ buchiHypervisor.set_init_state(0)
 #The buddy.bddtrue label is how to place a true value.
 #The label is the label we created earlier based on the 
 #atomic propositions
+#************************************************************#
 buchiHypervisor.new_edge(0,0, buddy.bddtrue)
 buchiHypervisor.new_edge(0,1, label)
 buchiHypervisor.new_edge(1,1, label)
 buchiHypervisor.new_edge(1,0, buddy.bddtrue)
 
 #Congratulations! The Hypervisor is now created!
-#This prints the .hoa file
+#This prints the .hoa file of the hypervisor to the screen
 print(buchiHypervisor.to_str('hoa'))
 
 #Saving the hypervisor to a .hoa and .dot files
