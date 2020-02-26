@@ -1,14 +1,15 @@
-byte count = 3;
+byte select = 3;
 
-active proctype counter()
+byte count = 0;
+
+active proctype selecter()
 {
 	do
+	:: select = 1;
+	:: select = 2;
 	:: if
-	   :: (count == 1) -> 
-	   	count = 3;
-	   :: else ->
-		count = count -1;
-	   fi
+		::select == 1 -> count = count+1
+	::fi
 	od;
 }
 

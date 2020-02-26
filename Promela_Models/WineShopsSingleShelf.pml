@@ -1,5 +1,5 @@
 #define N 2  // Shelf size
-#define N2 4 // History length
+#define N2 2 // History length
 
 // define number of instances of each process for the spins compiler
 #define __instances_winery 1
@@ -13,7 +13,7 @@
 int wine1s;
 int i = 0;
 byte history[N2] = 1;
-byte boughtWine;
+byte bw;
 
 // A function to aid in later readability
 inline updateHistory() {
@@ -27,7 +27,7 @@ inline updateHistory() {
 		:: else -> 
 			break
 		od;
-		history[0] = boughtWine;
+		history[0] = bw;
 		i = N2 - 1;
 		do
 		:: (i >= 0) && (history[i] == 1) ->
@@ -42,12 +42,12 @@ inline updateHistory() {
 	}
 }
 
-chan shelf1 = [N] of {byte}
+chan s1 = [N] of {byte}
 
 active proctype winery() {
-	// currently nondeterministic. We need it to favor shelf1
+	// currently nondeterministic. We need it to favor s1
 	do
-	:: shelf1!1 ->
+	:: s1!1 ->
 		// use the pc pointing to this next instruction
 		// to label the previous action
 		_ = 0
@@ -57,8 +57,8 @@ active proctype winery() {
 active proctype patron() {
 	do
 	:: if
-	   :: shelf1?[boughtWine] ->
-		shelf1?boughtWine;
+	   :: s1?[bw] ->
+		s1?bw;
 		updateHistory()
 	   fi
 	od;
