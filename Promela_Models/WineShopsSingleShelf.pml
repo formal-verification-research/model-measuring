@@ -2,8 +2,8 @@
 #define N2 2 // History length
 
 // define number of instances of each process for the spins compiler
-#define __instances_winery 1
-#define __instances_patron 1
+#define __instances_wnry 1
+#define __instances_ptrn 1
 
 
 // Types Of Wine   //
@@ -12,7 +12,7 @@
 
 int wine1s;
 int i = 0;
-byte history[N2] = 1;
+byte h[N2] = 0;
 byte bw;
 
 // A function to aid in later readability
@@ -22,18 +22,18 @@ inline updateHistory() {
 		wine1s = 0;
 		do
 		:: i > 0 -> 
-			history[i] = history[i - 1];
+			h[i] = h[i - 1];
 			i--
 		:: else -> 
 			break
 		od;
-		history[0] = bw;
+		h[0] = bw;
 		i = N2 - 1;
 		do
-		:: (i >= 0) && (history[i] == 1) ->
+		:: (i >= 0) && (h[i] == 1) ->
 			wine1s++;
 			i--
-		:: (i >= 0) && (history[i] != 1) ->
+		:: (i >= 0) && (h[i] != 1) ->
 			i--
 		:: else ->
 			break
@@ -44,7 +44,7 @@ inline updateHistory() {
 
 chan s1 = [N] of {byte}
 
-active proctype winery() {
+active proctype wnry() {
 	// currently nondeterministic. We need it to favor s1
 	do
 	:: s1!1 ->
@@ -54,7 +54,7 @@ active proctype winery() {
 	od;
 }
 
-active proctype patron() {
+active proctype ptrn() {
 	do
 	:: if
 	   :: s1?[bw] ->

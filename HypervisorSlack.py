@@ -93,7 +93,7 @@ k.save(model_name + '_kripke.hoa')
 k.save(model_name + '_kripke.dot','dot')
 
 print("Begining buchi conversion. This may take some time")
-buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA', 'Low', 'Small')
+buchi = spot.automaton(model_name + '_kripke.hoa').postprocess('BA', 'low', 'small')
 dead = spot.remove_ap()
 dead.add_ap("dead")
 buchi = dead.strip(buchi)
@@ -128,7 +128,7 @@ bdict = spot.make_bdd_dict();
 buchiHypervisor = spot.make_twa_graph(buchi.get_dict()); 
 
 #turns the atomic propositions into strings, so they can be used as a label
-str_atomic_propositions = " ".join([str(elem) for elem in atomic_propositions])
+str_atomic_propositions = "".join([str(elem) for elem in atomic_propositions[0]])
 print(str_atomic_propositions)
 print("")
 
@@ -164,7 +164,7 @@ buchiHypervisor.new_edge(1,0, buddy.bddtrue)
 
 #Congratulations! The Hypervisor is now created!
 #This prints the .hoa file of the hypervisor to the screen
-print(buchiHypervisor.to_str('hoa'))
+#print(buchiHypervisor.to_str('hoa'))
 
 #Saving the hypervisor to a .hoa and .dot files
 buchiHypervisor.save(model_name + '_Hypervisor.hoa')
