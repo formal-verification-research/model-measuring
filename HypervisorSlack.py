@@ -180,7 +180,7 @@ if ret_code == 0:
 #*****************************************************************************************************#
 product = spot.product(buchiHypervisor, buchi)
 
-product.save(model_name + '_Product.hoa')
+product.save(model_name + '_Product.hoa', 'hoa')
 product.save(model_name + '_Product.dot','dot')
 
 ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Product.dot', '-o', model_name + '_Product.pdf'])

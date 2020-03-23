@@ -1,4 +1,4 @@
-#define N 2  // Shelf size
+#define N 1  // Shelf size
 #define N2 2 // History length
 
 // define number of instances of each process for the spins compiler
@@ -16,7 +16,7 @@ byte h[N2] = 0;
 byte bw;
 
 // A function to aid in later readability
-inline updateHistory() {
+/*inline updateHistory() {
 	atomic {
 		i = N2 - 1;
 		wine1s = 0;
@@ -41,7 +41,7 @@ inline updateHistory() {
 		i = 0;
 	}
 }
-
+*/
 chan s1 = [N] of {byte}
 
 active proctype wnry() {
@@ -59,7 +59,7 @@ active proctype ptrn() {
 	:: if
 	   :: s1?[bw] ->
 		s1?bw;
-		updateHistory()
+		//updateHistory()
 	   fi
 	od;
 }
