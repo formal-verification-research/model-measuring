@@ -8,7 +8,7 @@ import buddy
 
 #************************************************#
 #  Description HypervisorSlack:
-#    Initially uses the Make Buchi code for
+#    Initially uses the MakeBuchi code for
 #    converting the promela model into both a
 #    kripke structure and a buchi automaton.
 #    This code will then take the same ltl 
@@ -16,14 +16,21 @@ import buddy
 #    hypervisor. If no LTL is specified then no
 #    hypervisor will be created, as no transitions
 #    can be perturbed.
-#
-#   Psuedocode to optimize:
-#   Add main function: 
-#       Parse arguments
-#       Function for MakeBuchi code
-#       Function for Hypervisor Code
 #************************************************#
 
+#
+# Psuedocode idea of how to produce labels for user to select
+#   Generate kripke using first variable produced by printing the model, set = 0
+#   extract all of labels from kripke using loop of some sort
+#   Print out labels for user to pick by entering a number eg. 1) wnry_0._pc = 1  2) ...
+#   Remake the kripke with the chosen label and continue with program execution using chosen label
+#
+
+#*****************************************************************************************************#
+# FUNCTION: makeBuchi(ltl)
+#   This function comes From Bryce Halling's MakeBuchi.py file, it turns a promela model into a buchi
+#   object. It needs to have at least 1 ltl specified, but more can be given.  
+#*****************************************************************************************************#
 def makeBuchi(ltl):
     print("--------Generating Buchi Automaton with specified ltl--------")
     #*****************************************************#
@@ -54,12 +61,12 @@ def makeBuchi(ltl):
 
     # Compile the promela file
     model = spot.ltsmin.load(filename)
-
+    print(model)
 
     # The argument taken here is the atomic proposition(s) to observe in a python list
     print("Making kripke with atomic propositions:")
     print(atomic_propositions)
-    k = model.kripke(atomic_propositions)
+    k = model.kripke(['wnry_0._pc == 1'])
 
     print("Done making kripke")
 
@@ -87,11 +94,11 @@ def makeBuchi(ltl):
     return buchi, atomic_propositions
     
 
-#***********************************************************************************************************
+#*****************************************************************************************************#
 #  End of MakeBuchi, this is where the hypervisor generation begins. 
 #   A reference for creating automaton via spot can be found at:
 #   https://spot.lrde.epita.fr/tut22.html
-#***********************************************************************************************************
+#*****************************************************************************************************#
 
 def makeHypervisor(buchi, atomic_propositions):
     print("")
@@ -153,7 +160,7 @@ def makeHypervisor(buchi, atomic_propositions):
     #this is to print out the hypervisor to a pdf so that it is easily read.
     ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Hypervisor.dot', '-o', model_name + '_Hypervisor.pdf'])
     if ret_code == 0:
-        print('Human readable Buchi automaton saved at ' + model_name + '_Hypervisor.pdf')
+        print('Human readable Hypervisor automaton saved at ' + model_name + '_Hypervisor.pdf')
     return buchiHypervisor, buchi
      
 #*****************************************************************************************************#
@@ -167,7 +174,7 @@ def product(buchiHypervisor, buchi):
 
     ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Product.dot', '-o', model_name + '_Product.pdf'])
     if ret_code == 0:
-        print('Human readable Buchi automaton saved at ' + model_name + '_Product.pdf')
+        print('Human readable Product automaton saved at ' + model_name + '_Product.pdf')
 
 #*****************************************************************************************************#
 #  FUNCTION: main
