@@ -20,11 +20,49 @@ import buddy
 
 #
 # Psuedocode idea of how to produce labels for user to select
-#   Generate kripke using first variable produced by printing the model, set = 0
+#   Create kripke with empty list
 #   extract all of labels from kripke using loop of some sort
 #   Print out labels for user to pick by entering a number eg. 1) wnry_0._pc = 1  2) ...
 #   Remake the kripke with the chosen label and continue with program execution using chosen label
 #
+
+#*****************************************************************************************************#
+# FUNCTION: selectAtomicPropositions
+#   This function generates an initial kripke from the model in order to see what labels the model has.
+#   It then sorts through those labels and produces a list of them to the user for selection. The user
+#   selects first which label they want to perturb and then they select which labels they also want to 
+#   see in the model and product.
+#*****************************************************************************************************#
+def selectAtomicPropositions():
+    separated_file = []
+
+    #load the model and put it into a kripke structure
+    model = spot.ltsmin.load(filename)
+    
+    print("Making initial kripke to generate labels")
+    kripke = model.kripke([])
+
+    print("Done making kripke")
+
+    # Save the kripke structure
+    kripke.save(model_name + '_kripke.hoa')
+    
+   # script_dir = os.path.dirname(__file__)
+   # rel_path = "Promela_Models/WineShopsSingleShelf_kripke.hoa"
+   # abs_file_path = os.path.join(script_dir, rel_path)
+    kripkeFile = open(model_name + '_kripke.hoa', "r")
+    if kripkeFile.mode != 'r':
+        print("unable to open kripke")
+        sys.exit()
+    kripkeContents = kripkeFile.read()
+
+
+    for part in kripkeContents:
+        separated_file += part
+
+    for part in separated_file:
+        print(part)
+
 
 #*****************************************************************************************************#
 # FUNCTION: makeBuchi(ltl)
@@ -66,7 +104,7 @@ def makeBuchi(ltl):
     # The argument taken here is the atomic proposition(s) to observe in a python list
     print("Making kripke with atomic propositions:")
     print(atomic_propositions)
-    k = model.kripke(['wnry_0._pc == 1'])
+    k = model.kripke(atomic_propositions)
 
     print("Done making kripke")
 
@@ -171,10 +209,14 @@ def product(buchiHypervisor, buchi):
 
     product.save(model_name + '_Product.hoa', 'hoa')
     product.save(model_name + '_Product.dot','dot')
-
     ret_code = subprocess.call(['dot', '-Tpdf', model_name + '_Product.dot', '-o', model_name + '_Product.pdf'])
     if ret_code == 0:
         print('Human readable Product automaton saved at ' + model_name + '_Product.pdf')
+    for s in range(0, product.num_states()):
+        print("State{}:".format(s))
+        for t in product.out(s):
+            print("edge({} -> {})".format(t.src,t.dst))
+            print("     label = ", spot.bdd_format_formula(product.get_dict(), t.cond))
 
 #*****************************************************************************************************#
 #  FUNCTION: main
@@ -193,7 +235,7 @@ if __name__ == "__main__":
             help='The promela specification to be used')
     parser.add_argument('--ltl', 
             default='NULL', 
-            help='The LTL formula to be checked. If none is specified, a comprehensive (and large) automaton will be made')
+            help='The LTL formula to be checked. If none is specified, it will be reduced to a single state')
     parser.add_argument('-c', '--clean', 
             action='store_true', 
             help='Clean the files made by previous runs. Requires specification of the model used in the previous run.')
@@ -214,6 +256,7 @@ if __name__ == "__main__":
             sys.exit(1)
         sys.exit(0)
 
-    buchi, atomic_propositions = makeBuchi(ltl)
-    buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
-    product(buchiHypervisor, buchi)
+    selectAtomicPropositions()
+   # buchi, atomic_propositions = makeBuchi(ltl)
+   # buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
+   # product(buchiHypervisor, buchi)
