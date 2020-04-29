@@ -5,6 +5,7 @@ import os
 import sys
 import argparse
 import buddy
+import re
 
 #************************************************#
 #  Description HypervisorSlack:
@@ -47,21 +48,17 @@ def selectAtomicPropositions():
     # Save the kripke structure
     kripke.save(model_name + '_kripke.hoa')
     
-   # script_dir = os.path.dirname(__file__)
-   # rel_path = "Promela_Models/WineShopsSingleShelf_kripke.hoa"
-   # abs_file_path = os.path.join(script_dir, rel_path)
-    kripkeFile = open(model_name + '_kripke.hoa', "r")
-    if kripkeFile.mode != 'r':
-        print("unable to open kripke")
-        sys.exit()
-    kripkeContents = kripkeFile.read()
+    with open(model_name + '_kripke.hoa', "r") as kripkeFile:
+        kripkeList = [word for line in kripkeFile for word in line.split()]
+        noDuplicatesList = list(dict.fromkeys(kripkeList))
+        p = re.compile('=')
+        p.findall(noDuplicatesList)
 
+    #for part in kripkeContents:
+    #    separated_file += part
 
-    for part in kripkeContents:
-        separated_file += part
-
-    for part in separated_file:
-        print(part)
+    #for part in separated_file:
+    #    print(part)
 
 
 #*****************************************************************************************************#
