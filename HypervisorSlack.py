@@ -51,14 +51,11 @@ def selectAtomicPropositions():
     with open(model_name + '_kripke.hoa', "r") as kripkeFile:
         kripkeList = [word for line in kripkeFile for word in line.split()]
         noDuplicatesList = list(dict.fromkeys(kripkeList))
-        p = re.compile('=')
-        p.findall(noDuplicatesList)
 
-    #for part in kripkeContents:
-    #    separated_file += part
-
-    #for part in separated_file:
-    #    print(part)
+        regex = re.compile('.*=\d"*')
+        finalList = [word for word in noDuplicatesList if regex.match(word)]
+        print(finalList)
+        
 
 
 #*****************************************************************************************************#
