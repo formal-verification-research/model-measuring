@@ -52,9 +52,28 @@ def selectAtomicPropositions():
         kripkeList = [word for line in kripkeFile for word in line.split()]
         noDuplicatesList = list(dict.fromkeys(kripkeList))
 
-        regex = re.compile('.*=\d"*')
-        finalList = [word for word in noDuplicatesList if regex.match(word)]
-        print(finalList)
+        findLabelsRegex = re.compile('.*=\d"*')
+        labelList = [word for word in noDuplicatesList if findLabelsRegex.match(word)]
+
+#        removeCommaRegex = re.compile('\w,')
+#        for word in labelList: 
+#            if removeCommaRegex.match(word):
+#                labelList.append(word[:-1:])
+#                labelList.remove(word)
+        
+        removeQuoteRegex1 = re.compile('"\w')
+        for word in labelList: 
+            if removeQuoteRegex1.match(word):
+                labelList.append(word[1::])
+                labelList.remove(word)
+
+#        removeQuoteRegex2 = re.compile('\w"')
+#        for word in labelList: 
+#            if removeQuoteRegex2.match(word):
+#                labelList.append(word[:-1:])
+#                labelList.remove(word)
+
+        print(labelList)
         
 
 
