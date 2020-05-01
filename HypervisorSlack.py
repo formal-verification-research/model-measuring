@@ -50,30 +50,36 @@ def selectAtomicPropositions():
     
     with open(model_name + '_kripke.hoa', "r") as kripkeFile:
         kripkeList = [word for line in kripkeFile for word in line.split()]
-        noDuplicatesList = list(dict.fromkeys(kripkeList))
 
-        findLabelsRegex = re.compile('.*=\d"*')
-        labelList = [word for word in noDuplicatesList if findLabelsRegex.match(word)]
+    noDuplicatesList = list(dict.fromkeys(kripkeList))
 
-#        removeCommaRegex = re.compile('\w,')
-#        for word in labelList: 
-#            if removeCommaRegex.match(word):
-#                labelList.append(word[:-1:])
-#                labelList.remove(word)
-        
-        removeQuoteRegex1 = re.compile('"\w')
-        for word in labelList: 
-            if removeQuoteRegex1.match(word):
-                labelList.append(word[1::])
-                labelList.remove(word)
+    findLabelsRegex = re.compile('.*=\d"*')
+    labelList = [word for word in noDuplicatesList if findLabelsRegex.search(word)]
+    
+    print(labelList)
+    
+    removeQuoteRegex2 = re.compile('\w"')
+    for word in labelList: 
+        if removeQuoteRegex2.search(word):
+            print("quote2", word)
+            labelList.append(word[:-1:])
+            labelList.remove(word)
 
-#        removeQuoteRegex2 = re.compile('\w"')
-#        for word in labelList: 
-#            if removeQuoteRegex2.match(word):
-#                labelList.append(word[:-1:])
-#                labelList.remove(word)
+    removeQuoteRegex1 = re.compile('"')
+    for word in labelList: 
+        if removeQuoteRegex1.match(word):
+            print("quote1", word)
+            labelList.append(word[1::])
+            labelList.remove(word)
 
-        print(labelList)
+    removeCommaRegex = re.compile('\d,')
+    for word in labelList: 
+        if removeCommaRegex.search(word):
+            print("comma", word)
+            labelList.append(word[:-1:])
+            labelList.remove(word)
+
+    print(labelList)
         
 
 
