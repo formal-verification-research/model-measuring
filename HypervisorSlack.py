@@ -56,31 +56,19 @@ def selectAtomicPropositions():
     findLabelsRegex = re.compile('.*=\d"*')
     labelList = [word for word in noDuplicatesList if findLabelsRegex.search(word)]
     
+    print(labelList, "\n")
+ 
+    removeQuoteRegex1 = re.compile('"|,')
+    for word in labelList: 
+        print("\n", word)
+        newWord = re.sub(r'"', '', word)
+        labelList.append(newWord)
+        print(newWord)
+        print(word)
+        print(labelList)
+        labelList.remove(word)
+        print(labelList)
     print(labelList)
-    
-    removeQuoteRegex2 = re.compile('\w"')
-    for word in labelList: 
-        if removeQuoteRegex2.search(word):
-            print("quote2", word)
-            labelList.append(word[:-1:])
-            labelList.remove(word)
-
-    removeQuoteRegex1 = re.compile('"')
-    for word in labelList: 
-        if removeQuoteRegex1.match(word):
-            print("quote1", word)
-            labelList.append(word[1::])
-            labelList.remove(word)
-
-    removeCommaRegex = re.compile('\d,')
-    for word in labelList: 
-        if removeCommaRegex.search(word):
-            print("comma", word)
-            labelList.append(word[:-1:])
-            labelList.remove(word)
-
-    print(labelList)
-        
 
 
 #*****************************************************************************************************#
