@@ -56,20 +56,19 @@ def selectAtomicPropositions():
     findLabelsRegex = re.compile('.*=\d"*')
     labelList = [word for word in noDuplicatesList if findLabelsRegex.search(word)]
     
-    print(labelList, "\n")
- 
-    removeQuoteRegex1 = re.compile('"|,')
+    finalList = []
     for word in labelList: 
-        print("\n", word)
-        newWord = re.sub(r'"', '', word)
-        labelList.append(newWord)
-        print(newWord)
-        print(word)
-        print(labelList)
-        labelList.remove(word)
-        print(labelList)
-    print(labelList)
+        newWord = word.replace('"', '')
+        newWord = newWord.replace(',', '')
+        finalList.append(newWord)
+    return finalList
 
+#*****************************************************************************************************#
+# FUNCTION: userSelectLabel(atomicPropositions)
+#   This function takes the labels produced from the kripke file and shows them to the user so they
+#   can select which labels they want to be perturbed.
+#*****************************************************************************************************#
+def userSelectLabel(atomicPropositions):
 
 #*****************************************************************************************************#
 # FUNCTION: makeBuchi(ltl)
@@ -263,7 +262,8 @@ if __name__ == "__main__":
             sys.exit(1)
         sys.exit(0)
 
-    selectAtomicPropositions()
+   atomic_Propositions = selectAtomicPropositions()
+   userSelectLabel()
    # buchi, atomic_propositions = makeBuchi(ltl)
    # buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
    # product(buchiHypervisor, buchi)
