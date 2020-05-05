@@ -58,6 +58,7 @@ def extractLabels():
     for word in labelList: 
         newWord = word.replace('"', '')
         newWord = newWord.replace(',', '')
+        newWord = newWord.replace('=', ' == ')
         finalList.append(newWord)
     return finalList
 
@@ -112,8 +113,8 @@ def userSelectLabel(labelList):
     print("The label that will be observed is: " + labelList[labelIndex]+ "\n")
     observeLabel = labelList[labelIndex]
     labelList.remove(observeLabel)
-
-    return perturbLabel, observeLabel
+    finalList = [perturbLabel, observeLabel]
+    return finalList
 
 
 #*****************************************************************************************************#
@@ -121,28 +122,28 @@ def userSelectLabel(labelList):
 #   This function comes From Bryce Halling's MakeBuchi.py file, it turns a promela model into a buchi
 #   object. It needs to have at least 1 ltl specified, but more can be given.  
 #*****************************************************************************************************#
-def makeBuchi(ltl):
+def makeBuchi(atomic_propositions):
     print("--------Generating Buchi Automaton with specified ltl--------")
     #*****************************************************#
     # Parses the LTL to extract useful atomic propositions.
     #*****************************************************#
-    comparison_symbols=['==', '!=', '>=', '<=', '>', '<']
-    separated_ltl = []
-    atomic_propositions = []
-
-    ltl = ltl.split('(')
-    for part in ltl:
-        separated_ltl += part.split(')')
-
-    for part in separated_ltl:
-        try:
-            words = part.split(' ')
-            if words[1] in comparison_symbols:
-                atomic_propositions.append(part)
-        except:
-            print("Ignoring " + part.join(' '))
-
-
+#    comparison_symbols=['==', '!=', '>=', '<=', '>', '<']
+#    separated_ltl = []
+#    atomic_propositions = []
+#
+#    ltl = ltl.split('(')
+#    for part in ltl:
+#        separated_ltl += part.split(')')
+#
+#    for part in separated_ltl:
+#        try:
+#            words = part.split(' ')
+#            if words[1] in comparison_symbols:
+#                atomic_propositions.append(part)
+#        except:
+#            print("Ignoring " + part.join(' '))
+#
+#
     #***********************************************************#
     # spot takes care of the automaton conversion beginning here.
     #***********************************************************#
@@ -309,7 +310,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     labelList = extractLabels()
-    perturbLabel, observeLabel = userSelectLabel(labelList)
-    buchi, atomic_propositions = makeBuchi(perturbLabel)
+    finalList = userSelectLabel(labelList)
+    buchi, atomic_propositions = makeBuchi(finalList)
     buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
     product(buchiHypervisor, buchi)
