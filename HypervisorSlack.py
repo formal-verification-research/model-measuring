@@ -28,7 +28,7 @@ import re
 #
 
 #*****************************************************************************************************#
-# FUNCTION: selectAtomicPropositions
+# FUNCTION: extractLabels()
 #   This function generates an initial kripke from the model in order to see what labels the model has.
 #   It then sorts through those labels and produces a list of labels which is returned. 
 #*****************************************************************************************************#
@@ -46,14 +46,19 @@ def extractLabels():
     # Save the kripke structure
     kripke.save(model_name + '_kripke.hoa')
     
+    #take everything out of the kripke file and put it into a list
     with open(model_name + '_kripke.hoa', "r") as kripkeFile:
         kripkeList = [word for line in kripkeFile for word in line.split()]
 
+    #remove the duplicates from the list
     noDuplicatesList = list(dict.fromkeys(kripkeList))
-
+    
+    #remove anything that isn't a label from the list
     findLabelsRegex = re.compile('.*=\d"*')
     labelList = [word for word in noDuplicatesList if findLabelsRegex.search(word)]
     
+    #format the labels so that the spot tool can work with them,
+    #removing random extra characters and adding ' == ' instead of just '='
     finalList = []
     for word in labelList: 
         newWord = word.replace('"', '')
@@ -63,20 +68,22 @@ def extractLabels():
     return finalList
 
 #*****************************************************************************************************#
-# FUNCTION: userSelectLabel(atomicPropositions)
+# FUNCTION: userSelectLabel(labelList)
 #   This function takes the labels produced from the label list produced by the extractLabels()
 #   function. These labels are shown to the user so that they can select which labels they want to 
 #   perturb. They select first the label they want to perturb, and then they select which labels 
 #   they want to see on the model as well. 
 #*****************************************************************************************************#
 def userSelectLabel(labelList):
+    #First the user will have the option to select the label to be perturbed.
     print("Select the label to be perturbed by entering the number and pressing 'enter'")
     count = 1
     for word in labelList:
         print('{}{}'.format(count, ":"), word + "\n")
         count += 1
     notValid = True
-
+    
+    #Here the user inputs their selection, invalid entries are not taken.
     while(notValid):
         index = input("\nYour selection: ")
         try:
@@ -88,17 +95,19 @@ def userSelectLabel(labelList):
             print("That is not a selection option, please try again")
             notValid = True
     labelIndex -= 1
-    print("The label that will be perturbed is: " + labelList[labelIndex] + "\n")
     perturbLabel = labelList[labelIndex]
-    labelList.remove(perturbLabel)
+    print("The label that will be perturbed is: " + perturbLabel + "\n")
+    labelList.remove(perturbLabel)      #here the perturbed label is removed from the list
     
+    #Second the user will have the option to select a label to observe in addition to the perturbLabel
     print("Select the label to be observed by entering the number and pressing 'enter'")
     count = 1
     for word in labelList:
         print('{}{}'.format(count, ":"), word + "\n")
         count += 1
     notValid = True
-
+    
+    #Here the user inputs their selection, invalid entries are not taken.
     while(notValid):
         index = input("\nYour selection: ")
         try:
@@ -110,11 +119,11 @@ def userSelectLabel(labelList):
             print("That is not a selection option, please try again")
             notValid = True
     labelIndex -= 1
-    print("The label that will be observed is: " + labelList[labelIndex]+ "\n")
     observeLabel = labelList[labelIndex]
+    print("The label that will be observed is: " + observeLabel + "\n")
     labelList.remove(observeLabel)
-    finalList = [perturbLabel, observeLabel]
-    return finalList
+    finalList = [perturbLabel, observeLabel]    #the chosen labels are placed in a list
+    return finalList                            #the list is returned for use by the program.
 
 
 #*****************************************************************************************************#
@@ -124,26 +133,7 @@ def userSelectLabel(labelList):
 #*****************************************************************************************************#
 def makeBuchi(atomic_propositions):
     print("--------Generating Buchi Automaton with specified ltl--------")
-    #*****************************************************#
-    # Parses the LTL to extract useful atomic propositions.
-    #*****************************************************#
-#    comparison_symbols=['==', '!=', '>=', '<=', '>', '<']
-#    separated_ltl = []
-#    atomic_propositions = []
-#
-#    ltl = ltl.split('(')
-#    for part in ltl:
-#        separated_ltl += part.split(')')
-#
-#    for part in separated_ltl:
-#        try:
-#            words = part.split(' ')
-#            if words[1] in comparison_symbols:
-#                atomic_propositions.append(part)
-#        except:
-#            print("Ignoring " + part.join(' '))
-#
-#
+
     #***********************************************************#
     # spot takes care of the automaton conversion beginning here.
     #***********************************************************#
@@ -152,7 +142,6 @@ def makeBuchi(atomic_propositions):
 
     # Compile the promela file
     model = spot.ltsmin.load(filename)
-    print(model)
 
     # The argument taken here is the atomic proposition(s) to observe in a python list
     print("Making kripke with atomic propositions:")
@@ -286,9 +275,6 @@ if __name__ == "__main__":
             type=str, 
             nargs=1, 
             help='The promela specification to be used')
-    parser.add_argument('--ltl', 
-            default='NULL', 
-            help='The LTL formula to be checked. If none is specified, it will be reduced to a single state')
     parser.add_argument('-c', '--clean', 
             action='store_true', 
             help='Clean the files made by previous runs. Requires specification of the model used in the previous run.')
@@ -297,10 +283,6 @@ if __name__ == "__main__":
 
     filename = args.filename[0]
     model_name = filename[0:-4]
-    if args.ltl != 'NULL':
-        ltl = args.ltl      #this is the LTL that is to be observed, as well as with which the hypervisor will be made.
-    else:
-        ltl = ''
 
     if args.clean:
         no_path_filename = filename.split('/')[-1]
