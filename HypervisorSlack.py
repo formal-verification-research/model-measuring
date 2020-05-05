@@ -30,11 +30,9 @@ import re
 #*****************************************************************************************************#
 # FUNCTION: selectAtomicPropositions
 #   This function generates an initial kripke from the model in order to see what labels the model has.
-#   It then sorts through those labels and produces a list of them to the user for selection. The user
-#   selects first which label they want to perturb and then they select which labels they also want to 
-#   see in the model and product.
+#   It then sorts through those labels and produces a list of labels which is returned. 
 #*****************************************************************************************************#
-def selectAtomicPropositions():
+def extractLabels():
     separated_file = []
 
     #load the model and put it into a kripke structure
@@ -43,7 +41,7 @@ def selectAtomicPropositions():
     print("Making initial kripke to generate labels")
     kripke = model.kripke([])
 
-    print("Done making kripke")
+    print("Done making kripke \n")
 
     # Save the kripke structure
     kripke.save(model_name + '_kripke.hoa')
@@ -65,10 +63,58 @@ def selectAtomicPropositions():
 
 #*****************************************************************************************************#
 # FUNCTION: userSelectLabel(atomicPropositions)
-#   This function takes the labels produced from the kripke file and shows them to the user so they
-#   can select which labels they want to be perturbed.
+#   This function takes the labels produced from the label list produced by the extractLabels()
+#   function. These labels are shown to the user so that they can select which labels they want to 
+#   perturb. They select first the label they want to perturb, and then they select which labels 
+#   they want to see on the model as well. 
 #*****************************************************************************************************#
-def userSelectLabel(atomicPropositions):
+def userSelectLabel(labelList):
+    print("Select the label to be perturbed by entering the number and pressing 'enter'")
+    count = 1
+    for word in labelList:
+        print('{}{}'.format(count, ":"), word + "\n")
+        count += 1
+    notValid = True
+
+    while(notValid):
+        index = input("\nYour selection: ")
+        try:
+            labelIndex = int(index)
+            notValid = False
+        except ValueError:
+            print("Only enter the integer value of your selection please")
+        if(labelIndex > count - 1):
+            print("That is not a selection option, please try again")
+            notValid = True
+    labelIndex -= 1
+    print("The label that will be perturbed is: " + labelList[labelIndex] + "\n")
+    perturbLabel = labelList[labelIndex]
+    labelList.remove(perturbLabel)
+    
+    print("Select the label to be observed by entering the number and pressing 'enter'")
+    count = 1
+    for word in labelList:
+        print('{}{}'.format(count, ":"), word + "\n")
+        count += 1
+    notValid = True
+
+    while(notValid):
+        index = input("\nYour selection: ")
+        try:
+            labelIndex = int(index)
+            notValid = False
+        except ValueError:
+            print("Only enter the integer value of your selection please")
+        if(labelIndex > count - 1):
+            print("That is not a selection option, please try again")
+            notValid = True
+    labelIndex -= 1
+    print("The label that will be observed is: " + labelList[labelIndex]+ "\n")
+    observeLabel = labelList[labelIndex]
+    labelList.remove(observeLabel)
+
+    return perturbLabel, observeLabel
+
 
 #*****************************************************************************************************#
 # FUNCTION: makeBuchi(ltl)
@@ -262,8 +308,8 @@ if __name__ == "__main__":
             sys.exit(1)
         sys.exit(0)
 
-   atomic_Propositions = selectAtomicPropositions()
-   userSelectLabel()
-   # buchi, atomic_propositions = makeBuchi(ltl)
-   # buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
-   # product(buchiHypervisor, buchi)
+    labelList = extractLabels()
+    perturbLabel, observeLabel = userSelectLabel(labelList)
+    buchi, atomic_propositions = makeBuchi(perturbLabel)
+    buchiHypervisor, buchi = makeHypervisor(buchi, atomic_propositions)
+    product(buchiHypervisor, buchi)
