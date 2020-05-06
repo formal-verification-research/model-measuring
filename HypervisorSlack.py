@@ -19,14 +19,6 @@ import re
 #    can be perturbed.
 #************************************************#
 
-#
-# Psuedocode idea of how to produce labels for user to select
-#   Create kripke with empty list
-#   extract all of labels from kripke using loop of some sort
-#   Print out labels for user to pick by entering a number eg. 1) wnry_0._pc = 1  2) ...
-#   Remake the kripke with the chosen label and continue with program execution using chosen label
-#
-
 #*****************************************************************************************************#
 # FUNCTION: extractLabels()
 #   This function generates an initial kripke from the model in order to see what labels the model has.
@@ -89,11 +81,11 @@ def userSelectLabel(labelList):
         try:
             labelIndex = int(index)
             notValid = False
+            if((labelIndex > count - 1) | (labelIndex < 1)):
+                print("That is not a selection option, please try again")
+                notValid = True
         except ValueError:
             print("Only enter the integer value of your selection please")
-        if(labelIndex > count - 1):
-            print("That is not a selection option, please try again")
-            notValid = True
     labelIndex -= 1
     perturbLabel = labelList[labelIndex]
     print("The label that will be perturbed is: " + perturbLabel + "\n")
@@ -113,11 +105,11 @@ def userSelectLabel(labelList):
         try:
             labelIndex = int(index)
             notValid = False
+            if((labelIndex > count - 1) | (labelIndex < 1)):
+                print("That is not a selection option, please try again")
+                notValid = True
         except ValueError:
             print("Only enter the integer value of your selection please")
-        if(labelIndex > count - 1):
-            print("That is not a selection option, please try again")
-            notValid = True
     labelIndex -= 1
     observeLabel = labelList[labelIndex]
     print("The label that will be observed is: " + observeLabel + "\n")
