@@ -15,37 +15,10 @@ int i = 0;
 byte h[N2] = 0;
 byte bw;
 
-// A function to aid in later readability
-/*inline updateHistory() {
-	atomic {
-		i = N2 - 1;
-		wine1s = 0;
-		do
-		:: i > 0 -> 
-			h[i] = h[i - 1];
-			i--
-		:: else -> 
-			break
-		od;
-		h[0] = bw;
-		i = N2 - 1;
-		do
-		:: (i >= 0) && (h[i] == 1) ->
-			wine1s++;
-			i--
-		:: (i >= 0) && (h[i] != 1) ->
-			i--
-		:: else ->
-			break
-		od;
-		i = 0;
-	}
-}
-*/
 chan s1 = [N] of {byte}
 
 active proctype wnry() {
-	// currently nondeterministic. We need it to favor s1
+
 	do
 	:: s1!1 ->
 		// use the pc pointing to this next instruction
