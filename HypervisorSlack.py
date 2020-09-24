@@ -199,7 +199,7 @@ def makeHypervisor(buchi, atomic_propositions):
     buchiHypervisor.set_generalized_buchi(2)
 
     #Here we decide how many states the automaton will have
-    buchiHypervisor.new_states(3)
+    buchiHypervisor.new_states(2)
 
     #This is where we set the initial state, by default it's 0,
     #but it's still good to set it any ways.
@@ -217,9 +217,8 @@ def makeHypervisor(buchi, atomic_propositions):
     buchiHypervisor.new_edge(0,0, buddy.bddtrue)
     buchiHypervisor.new_edge(0,1, label)
     buchiHypervisor.new_edge(1,1, label)
-    buchiHypervisor.new_edge(1,2, -label)
-    buchiHypervisor.new_edge(2,2, -label)
-    buchiHypervisor.new_edge(2,1, label)
+    buchiHypervisor.new_edge(1,0, -label)
+    buchiHypervisor.new_edge(1,0, -label)
 
     #Congratulations! The Hypervisor is now created!
     #This prints the .hoa file of the hypervisor to the screen

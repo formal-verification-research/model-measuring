@@ -1,0 +1,63 @@
+The following options are for perturbing the recieve action from a channel.
+
+Version00: Hypervisor with 3 states. This is our old option from last year
+
+    buchiHypervisor.new_states(3)
+
+    buchiHypervisor.new_edge(0,0, buddy.bddtrue)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, label)
+    buchiHypervisor.new_edge(1,2, -label)
+    buchiHypervisor.new_edge(2,2, -label)
+    buchiHypervisor.new_edge(2,1, label)
+
+Version01: 
+
+    buchiHypervisor.new_states(3)
+
+    buchiHypervisor.new_edge(0,0, buddy.bddtrue)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, buddy.bddtrue)
+    buchiHypervisor.new_edge(1,2, -label)
+    buchiHypervisor.new_edge(2,2, -label)
+    buchiHypervisor.new_edge(2,1, label)
+
+Version02:
+
+    buchiHypervisor.new_states(3)
+
+    buchiHypervisor.new_edge(0,0, -label)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, buddy.bddtrue)
+    buchiHypervisor.new_edge(1,2, -label)
+    buchiHypervisor.new_edge(2,2, -label)
+    buchiHypervisor.new_edge(2,1, label)
+
+Version03: This is the same as Version2, but it is reduced. By observation though
+it can be noted that they have the same behaviour.
+
+    buchiHypervisor.new_states(2)
+
+    buchiHypervisor.new_edge(0,0, -label)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, buddy.bddtrue)
+    buchiHypervisor.new_edge(1,0, -label)
+
+Version04:This version and Version05 are slight variations to Version03 to analyze
+what changes are made when they are implemented.
+
+    buchiHypervisor.new_states(2)
+
+    buchiHypervisor.new_edge(0,0, buddy.bddtrue)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, buddy.bddtrue)
+    buchiHypervisor.new_edge(1,0, -label)
+
+Version05:
+
+    buchiHypervisor.new_states(2)
+
+    buchiHypervisor.new_edge(0,0, buddy.bddtrue)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, -label)
+    buchiHypervisor.new_edge(1,0, -label)
