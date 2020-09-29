@@ -214,10 +214,10 @@ def makeHypervisor(buchi, atomic_propositions):
     #The label is the label we created earlier based on the 
     #atomic propositions
     #************************************************************#
+
     buchiHypervisor.new_edge(0,0, buddy.bddtrue)
     buchiHypervisor.new_edge(0,1, label)
     buchiHypervisor.new_edge(1,1, label)
-    buchiHypervisor.new_edge(1,0, -label)
     buchiHypervisor.new_edge(1,0, -label)
 
     #Congratulations! The Hypervisor is now created!

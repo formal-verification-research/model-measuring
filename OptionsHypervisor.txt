@@ -61,3 +61,13 @@ Version05:
     buchiHypervisor.new_edge(0,1, label)
     buchiHypervisor.new_edge(1,1, -label)
     buchiHypervisor.new_edge(1,0, -label)
+
+Version06:
+
+    buchiHypervisor.new_states(2)
+
+    buchiHypervisor.new_edge(0,0, buddy.bddtrue)
+    buchiHypervisor.new_edge(0,1, label)
+    buchiHypervisor.new_edge(1,1, label)
+    buchiHypervisor.new_edge(1,0, -label)
+    buchiHypervisor.new_edge(1,0, -label)
